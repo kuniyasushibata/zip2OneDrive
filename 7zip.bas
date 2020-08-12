@@ -1,4 +1,4 @@
-Attribute VB_Name = "Module1"
+Attribute VB_Name = "Module7zip"
 Option Explicit
 
 Const pathOf7zip As String = "C:\Program Files\7-Zip\7z.exe"
