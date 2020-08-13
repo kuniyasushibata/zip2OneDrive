@@ -7,7 +7,6 @@ Const fileNameOfResult As String = "7zip_result.txt"
 Const maxCount As Long = 10
 
 Private Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal ms As Long)
-Private Declare PtrSafe Function PathIsDirectoryEmpty Lib "SHLWAPI.DLL" Alias "PathIsDirectoryEmptyA" (ByVal pszPath As String) As Boolean
 
 Function Is7zipInstalled() As Boolean
     Dim ret As Boolean
@@ -44,7 +43,7 @@ End Function
 Function Extract7zip(zipFilePath As String, folderPath As String, pass As String) As Boolean
     Dim ret As Boolean
     If Dir(zipFilePath) <> "" Then
-        If PathIsDirectoryEmpty(folderPath) = 1 Then
+        If FFPathIsDirectoryEmpty(folderPath) = True Then
             ret = Execute7zip(CreateCmdOf7zip(False, folderPath, zipFilePath, pass))
             If ret = False Then
                 DeleteFileAndFolder folderPath
@@ -119,27 +118,11 @@ Private Function CheckResultOf7zip(filePath As String) As Boolean
 End Function
 
 Private Sub DeleteFileAndFolder(folder As String)
-    Dim fso As Object
-    Dim all As String
-    Set fso = CreateObject("Scripting.FileSystemObject")
-    all = fso.BuildPath(folder, "*")
-    Debug.Print all
-    fso.DeleteFile all, True
-    fso.DeleteFolder all, True
-    Set fso = Nothing
+    FFDeleteFileAndFolder (folder)
 End Sub
 
 Private Function IsFolderExistsAndNotEmpty(folderPath As String) As Boolean
-    Dim ret As Boolean
-    ret = False
-    If Dir(folderPath, vbDirectory) <> "" Then
-        If PathIsDirectoryEmpty(folderPath) = 0 Then
-            ret = True
-        End If
-    Else
-        ret = False
-    End If
-    IsFolderExistsAndNotEmpty = ret
+    IsFolderExistsAndNotEmpty = FFIsFolderExistsAndNotEmpty(folderPath)
 End Function
 
 Private Sub Test()
@@ -150,17 +133,13 @@ Private Sub Test()
     'MsgBox Extract7zip("D:\github\UiPathLogToExcel.zip", "D:\github\a", "test")
     'MsgBox Extract7zip("D:\github\UiPathLogToExcel2.zip", "D:\github\a", "test")
     'MsgBox Extract7zip("D:\github\UiPathLogToExcel.zip", "D:\github\a2", "test")
-    MsgBox Extract7zip("D:\github\UiPathLogToExcel.zip", "D:\github\a", "test2")
+    'MsgBox Extract7zip("D:\github\UiPathLogToExcel.zip", "D:\github\a", "test2")
 End Sub
 
-Private Sub Test2()
-    MsgBox PathIsDirectoryEmpty("D:\github\a")
-End Sub
-
-Private Sub Test3()
+Private Sub Test1()
     DeleteFileAndFolder "D:\github\a"
 End Sub
 
-Private Sub Test4()
+Private Sub Test2()
     MsgBox IsFolderExistsAndNotEmpty("D:\github\a")
 End Sub
